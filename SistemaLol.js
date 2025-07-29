@@ -168,7 +168,7 @@ function menuPrincipal() {
 8 - Sair;
 `);
 
-    rl.question("\nRESPOSTA: ", (input) => {
+    rl.question("RESPOSTA: ", (input) => {
         const escolha = parseInt(input);
 
         if (isNaN(escolha) || escolha < 1 || escolha > 8) {
@@ -416,9 +416,12 @@ function BIDplayers(visualAdm = false){
     menuSaida();
 }
 
-function BIDADM(){
-    loginAdm(voltarMenu = false);
-    BIDplayers(visualAdm = true);
+function BIDADM() {
+    loginAdm(false, function(success) {
+        if (success) {
+            BIDplayers(true);
+        }
+    });
 }
 
 
@@ -448,7 +451,7 @@ function criarChaveamento(){
     `)
 }
 
-function loginAdm(voltarMenu = false){
+function loginAdm(voltarMenu = false,  callback){
 
     let logins = [    
         { login:"gabrierubunda122@gmail.com", senha:"CocoCola2005$"},
@@ -460,14 +463,14 @@ function loginAdm(voltarMenu = false){
 
         if (!respostaVoltarMenu){
             console.log("Digte uma resposta valida!")
-            return(voltarMenu = true)
+            return(voltarMenu = true, callback)
         }
         if (respostaVoltarMenu === "S"){
             return menuPrincipal();
         }
         if(respostaVoltarMenu === "N"){
             console.log("voltando ao LOGIN!")
-            return (loginAdm(voltarMenu = false))
+            return (loginAdm(voltarMenu = false, callback))
         }
 
     })}
@@ -488,9 +491,10 @@ function loginAdm(voltarMenu = false){
             }
             if (acessoLiberado){
                 console.log("✅ Acesso liberado!")
+                callback(true);
             }
             else {console.log("❌ Acesso negado!");
-                return loginAdm(voltarMenu = true)
+                return loginAdm(voltarMenu = true, callback)
             }
         });
     });
