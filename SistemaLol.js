@@ -1,4 +1,5 @@
-const { loadEnvFile } = require("process");
+//======== READLINE ========
+
 const readline = require("readline");
 
 const rl = readline.createInterface({
@@ -150,10 +151,9 @@ let Times = [
     }
 ];
 
-//======== FUNÇÕES PRINCIPAIS ========
+//======== FUNÇÃO PRINCIPAl ========
 
 menuPrincipal();
-
 function menuPrincipal() {
     console.log(`
 ==== Menu Principal ====
@@ -177,13 +177,13 @@ function menuPrincipal() {
         }
 
         switch (escolha) {
-            case 1: cadastrarTime(); break;
+            case 1: cadastrarTime(1); break;
             case 2: menuEditarTime(); break;
             case 3: bancoInternoDeDados(); break;
             case 4: chaveamento(); break;
             case 5: resultados(); break;
             case 6: regrasRegulamentos(); break;
-            case 7: suporte(); break;
+            case 7: suporteMenu(); break;
             case 8:
                 console.log("\n==== Você saiu. Tchau! ====");
                 rl.close();
@@ -192,10 +192,29 @@ function menuPrincipal() {
     });
 }
 
-function cadastrarTime() {
-    console.log("\n==== Cadastrar TIME ====\n");
+//======== FUNÇÕES DO MENU ========
+
+// -- CADASTRAR --
+
+function cadastrarTime(controle = 1) {
+    if (controle === 1){console.log("\n==== Cadastrar TIME ====\n");}
+
+    const validarLetras = [
+        'a','b','c','d','e','f','g','h','i','j','k','l','m',
+        'n','o','p','q','r','s','t','u','v','w','x','y','z',
+        'A','B','C','D','E','F','G','H','I','J','K','L','M',
+        'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
+      ]; 
 
     rl.question("Nome do TIME: ", (inputNomeTime) => {
+        
+        if (inputNomeTime.length === 0){
+            console.log(`você deixou o campo em branco!`); return cadastrarTime(2);
+            }
+        if (!inputNomeTime.split("").every(a => validarLetras.includes(a))){
+            console.log(`Nome de time invalido!(use: a-z / A-Z)`)
+            return cadastrarTime(2);
+        }
         solicitarTag(inputNomeTime);
     });
 
@@ -222,10 +241,27 @@ function cadastrarTime() {
         console.log("\n--> Cadastrar CAPITÃO:\n");
 
         rl.question("Nome do capitão: ", (nomeCapitao) => {
-            rl.question("Nick do LoL + Tag (ex: Beifonger#1234): ", (inputNickETag) => {
-                const [nick, riotTag] = inputNickETag.split('#').map(p => p.trim());
+            if (!isNaN(nomeCapitao)){
+                console.log(`digte um nome valido!`)
+            }
 
-                rl.question("Número de WhatsApp: ", (whatsapp) => {
+            rl.question("Nick do LoL + Tag (ex: Beifonger#1234): ", (inputNickETag) => {
+                let [nick, riotTag] = inputNickETag.split('#').map(p => p.trim());
+
+                if (!riotTag){
+                    console.log(`TAG considearada como "BR1"  ||  ${nick}#BR1`);
+                    riotTag = "BR1";
+                }
+                numeroWhats();
+                function numeroWhats(){
+                    rl.question("Número de WhatsApp: ", (whatsapp) => {
+                    let numeroZap = parseInt(whatsapp)
+                    
+                        if (isNaN(numeroZap) || numeroZap.length < 11 || numeroZap.length > 12){
+                            console.log(`O Número: ${whatsapp}, não é valido!`)
+                            return numeroWhats();                      
+                        }   
+
                     const time = {
                         nome: nomeTime,
                         tag: tagTime,
@@ -242,6 +278,7 @@ function cadastrarTime() {
                     console.log(`\n✅ Capitão cadastrado com sucesso!`);
                     registroPlayers(time);
                 });
+                }
             });
         });
     }
@@ -251,6 +288,10 @@ function registroPlayers(time) {
     rl.question(`\nQuantidade de Players (5 a 10): `, (inputQuantidadePlayers) => {
         const quantidadePlayers = parseInt(inputQuantidadePlayers);
 
+        if (isNaN(quantidadePlayers)){
+            console.log(`❌ a resposta: ${quantidadePlayers} não é valida como opção!`)
+            return registroPlayers(time)
+        }
         if (quantidadePlayers < 5) {
             console.log(`❌ Seu time deve ter no mínimo 5 Players!`);
             return registroPlayers(time);
@@ -274,9 +315,18 @@ function perguntasPlayer(time, quantidade, i) {
     console.log(`\n==== Cadastrando Player ${i} de ${quantidade} ====`);
 
     rl.question("Nome Completo: ", (nome) => {
+    const respostaNome = parseInt(nome)
+        if (!isNaN(nome) || respostaNome.length === 0){
+            console.log(`digte um nome valido!`)
+            return perguntasPlayer (time, quantidade, i)
+        }
         rl.question("Nick do LoL + Tag (ex: Beifonger#1234): ", (inputNickETag) => {
-            const [nick, riotTag] = inputNickETag.split('#').map(p => p.trim());
-
+            let [nick, riotTag] = inputNickETag.split('#').map(p => p.trim());
+            if (!riotTag){
+                console.log(`TAG considearada como "BR1"  ||  ${nick}#BR1`);
+                riotTag = "BR1";
+            }
+kjbh
             rl.question("Discord: ", (discord) => {
                 perguntarElo((elosAtual, divisaoElo) => {
                     time.players.push({
@@ -340,28 +390,14 @@ Qual a divisão?
     });
 }
 
-// ========== OUTRAS FUNÇÕES ==========
-
-function menuSaida() {
-    console.log(`\n==== Menu Saída ====
-1 - Voltar para o Menu Principal;
-2 - Sair;
-`);
-
-    rl.question("RESPOSTA: ", (input) => {
-        const opcao = parseInt(input);
-        if (opcao === 1) return menuPrincipal();
-        if (opcao === 2) return rl.close();
-
-        console.log("Opção inválida.");
-        return menuSaida();
-    });
-}
+// -- EDITAR --
 
 function menuEditarTime() {
     console.log(`\n==== Menu Editar Time ====\n(Função em construção)`);
     menuPrincipal();
 }
+
+// -- BANCO INTERNO DE DADOS --
 
 function bancoInternoDeDados() {
         console.log("\n==== BID ====\n")
@@ -424,6 +460,7 @@ function BIDADM() {
     });
 }
 
+// -- CHAVEAMENTO --
 
 function chaveamento() {
     console.log(`==== Menu chaveamento ====`)
@@ -451,11 +488,85 @@ function criarChaveamento(){
     `)
 }
 
+// -- RESULTADOS --
+
+function resultados() {
+    console.log("Função em construção...");
+    menuPrincipal();
+}
+
+// -- REGRAS E REGULAMENTO --
+
+function regrasRegulamentos() {
+    console.log("Função em construção...");
+    menuPrincipal();
+}
+
+// -- SUPORTE --
+
+tickets = [];
+
+function suporteMenu() {
+console.log(`==== SUPORTE ====
+
+1 - MANDAR TICKET
+2 - SUPORTE WHATSAPP
+3 - VER RESPOSTAS
+
+-- ADM --
+4 - RESPONDER TICKET
+5 - DELETAR`);
+
+rl.question("Resposta: ", (inputSuporte) =>{
+    const RS = parseInt(inputSuporte)
+
+    if (isNaN(RS) || RS > 5 || RS < 1){
+        console.log(`A resposta ${RS}, não é valida!`)
+        return suporteMenu();
+    }
+
+    switch(RS){
+        case 1: mandarTicket(); break;
+        case 2: suporteTicket(); break;
+        case 3: verRespostas(); break;
+        case 4: responderTicket(); break;
+        case 5: deletarTicket(); break;
+        
+    }
+});
+}
+
+function mandarTicket(){
+
+    console.log(`ticket:\n`)
+
+
+    
+}
+
+// ========== FUNÇÕES UTILITARIAS ==========
+
+function menuSaida() {
+    console.log(`\n==== Menu Saída ====
+1 - Voltar para o Menu Principal;
+2 - Sair;
+`);
+
+    rl.question("RESPOSTA: ", (input) => {
+        const opcao = parseInt(input);
+        if (opcao === 1) return menuPrincipal();
+        if (opcao === 2) return rl.close();
+
+        console.log("Opção inválida.");
+        return menuSaida();
+    });
+}
+
 function loginAdm(voltarMenu = false,  callback){
 
     let logins = [    
-        { login:"gabrierubunda122@gmail.com", senha:"CocoCola2005$"},
-        { login:"gabriel.boom1419@gmail.com", senha:"98690069GGbr$"}
+        { login:"teste@gmail", senha:"testesenha1"},
+        { login:"teste2@gmail", senha:"testesenha2"}
     ];
 
     if (voltarMenu){rl.question("Voltar Menu (s/n)? ",(inputVoltarMenu) => {
@@ -498,19 +609,4 @@ function loginAdm(voltarMenu = false,  callback){
             }
         });
     });
-}
-
-function resultados() {
-    console.log("Função em construção...");
-    menuPrincipal();
-}
-
-function regrasRegulamentos() {
-    console.log("Função em construção...");
-    menuPrincipal();
-}
-
-function suporte() {
-    console.log("Função em construção...");
-    menuPrincipal();
 }
