@@ -63,6 +63,9 @@ function menuPrincipal() {
   });
 }
 
+// ======== FUNÇÕES MENU PRINCIPAL ========
+
+//-- Cadastrar
 function cadastrarTime() {
   console.log("\n==== Cadastrar time ====");
   rl.question("Nome do time: ", (nome) => {
@@ -205,6 +208,7 @@ function selecionarElo(callback) {
   });
 }
 
+//-- Editar
 function editarTime() {
   if (times.length === 0) {
     console.log("❌ Nenhum time cadastrado.");
@@ -227,6 +231,7 @@ function editarTime() {
   });
 }
 
+//-- BID
 function menuBID() {
   console.log("\n==== Banco Interno de Dados ====\n1-Players 2-ADM 3-Voltar");
   rl.question("Opção: ", (o) => {
@@ -265,6 +270,7 @@ function exibirBID(mostrarAdm) {
   menuSaida();
 }
 
+//-- Chaveamento
 function menuChaveamento() {
   console.log("\n==== Chaveamento ====\n1-Criar 2-Ver 3-Voltar");
   rl.question("Opção: ", (o) => {
@@ -354,6 +360,7 @@ function mostrarRegras() {
   menuSaida();
 }
 
+//-- Suporte
 function menuSuporte() {
   console.log(
     "\n==== Suporte ====\n1-Enviar ticket 2-Ver tickets 3-Responder ticket 4-Excluir ticket 5-Voltar"
@@ -426,6 +433,8 @@ function excluirTicket() {
     menuSaida();
   });
 }
+
+// ======== FUNÇÕES DE UTILIDADE ========
 
 function menuSaida() {
   console.log("\n1-Voltar menu principal 2-Sair");
