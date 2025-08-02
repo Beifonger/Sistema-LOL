@@ -1,612 +1,565 @@
-//======== READLINE ========
-
 const readline = require("readline");
 
 const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
+  input: process.stdin,
+  output: process.stdout,
 });
 
-let Times = [
-    {
-        nome: "Furia E-Sports",
-        tag: "FUR",
-        capitao: {
-            nome: "Carlos Alberto",
-            nickLoL: "FURCarlin",
-            tagLoL: "1111",
-            whatsapp: "11999999999"
-        },
-        players: [
-            {
-                nome: "Lucas Oliveira",
-                nickLoL: "Luquinhas",
-                tagLoL: "1234",
-                discord: "Luquinhas#0001",
-                elo: "DIAMANTE I"
-            },
-            {
-                nome: "Marcos Silva",
-                nickLoL: "Marcão",
-                tagLoL: "2222",
-                discord: "Marcao#1234",
-                elo: "PLATINA II"
-            },
-            {
-                nome: "João Pedro",
-                nickLoL: "JpGod",
-                tagLoL: "3333",
-                discord: "JpGod#3333",
-                elo: "OURO I"
-            },
-            {
-                nome: "Thiago Santos",
-                nickLoL: "ThiZada",
-                tagLoL: "4444",
-                discord: "ThiZada#4444",
-                elo: "DIAMANTE IV"
-            },
-            {
-                nome: "Ricardo Mendes",
-                nickLoL: "RicMaster",
-                tagLoL: "5555",
-                discord: "RicMaster#5555",
-                elo: "PLATINA III"
-            }
-        ]
-    },
-    {
-        nome: "Pain Gaming",
-        tag: "PNG",
-        capitao: {
-            nome: "Felipe Araújo",
-            nickLoL: "PainFelps",
-            tagLoL: "9999",
-            whatsapp: "11988888888"
-        },
-        players: [
-            {
-                nome: "André Costa",
-                nickLoL: "Andrezin",
-                tagLoL: "6666",
-                discord: "Andrezin#6666",
-                elo: "CHALLENGER I"
-            },
-            {
-                nome: "Gustavo Rocha",
-                nickLoL: "GugaTop",
-                tagLoL: "7777",
-                discord: "GugaTop#7777",
-                elo: "GRÃO MESTRE II"
-            },
-            {
-                nome: "Pedro Martins",
-                nickLoL: "MartinsBR",
-                tagLoL: "8888",
-                discord: "Martins#8888",
-                elo: "MESTRE IV"
-            },
-            {
-                nome: "Lucas Ferreira",
-                nickLoL: "LFer",
-                tagLoL: "1212",
-                discord: "LFer#1212",
-                elo: "DIAMANTE II"
-            },
-            {
-                nome: "Rafael Lima",
-                nickLoL: "RafaMid",
-                tagLoL: "3434",
-                discord: "RafaMid#3434",
-                elo: "OURO III"
-            }
-        ]
-    },
-    {
-        nome: "INTZ",
-        tag: "INZ",
-        capitao: {
-            nome: "Gabriel Souza",
-            nickLoL: "INTZGabs",
-            tagLoL: "5656",
-            whatsapp: "11977777777"
-        },
-        players: [
-            {
-                nome: "Mateus Almeida",
-                nickLoL: "MatAlm",
-                tagLoL: "7878",
-                discord: "MatAlm#7878",
-                elo: "PRATA I"
-            },
-            {
-                nome: "Renan Cruz",
-                nickLoL: "RenanRox",
-                tagLoL: "9090",
-                discord: "RenanRox#9090",
-                elo: "BRONZE III"
-            },
-            {
-                nome: "Henrique Lopes",
-                nickLoL: "HenriqL",
-                tagLoL: "1112",
-                discord: "HenriqL#1112",
-                elo: "OURO IV"
-            },
-            {
-                nome: "Igor Santana",
-                nickLoL: "IgorOP",
-                tagLoL: "3435",
-                discord: "IgorOP#3435",
-                elo: "PLATINA IV"
-            },
-            {
-                nome: "Paulo Cesar",
-                nickLoL: "PCes",
-                tagLoL: "7879",
-                discord: "PCes#7879",
-                elo: "DIAMANTE III"
-            }
-        ]
-    }
-];
+// Arrays globais
+const times = carregarTimesTeste(true);
+const tickets = [];
+let chaveamentos = [];
+const alfabeto = gerarAlfabeto();
 
-//======== FUNÇÃO PRINCIPAl ========
-
+// ======== INÍCIO ========
 menuPrincipal();
+
 function menuPrincipal() {
-    console.log(`
-==== Menu Principal ====
+  console.log(`\n==== Menu Principal ====\n
+1 - Cadastrar time
+2 - Editar time
+3 - BID (Banco Interno de Dados)
+4 - Chaveamento
+5 - Resultados
+6 - Regras e Regulamento
+7 - Suporte
+8 - Sair\n`);
 
-1 - Cadastrar TIME;
-2 - Editar TIME;
-3 - BID (Banco interno de Dados);
-4 - Chaveamento;
-5 - Resultados;
-6 - Regras e Regulamento;
-7 - Suporte;
-8 - Sair;
-`);
+  rl.question("Escolha: ", (input) => {
+    const opcao = parseInt(input);
 
-    rl.question("RESPOSTA: ", (input) => {
-        const escolha = parseInt(input);
-
-        if (isNaN(escolha) || escolha < 1 || escolha > 8) {
-            console.log(`\n❌ "${input}" não é uma opção válida!`);
-            return menuSaida();
-        }
-
-        switch (escolha) {
-            case 1: cadastrarTime(1); break;
-            case 2: menuEditarTime(); break;
-            case 3: bancoInternoDeDados(); break;
-            case 4: chaveamento(); break;
-            case 5: resultados(); break;
-            case 6: regrasRegulamentos(); break;
-            case 7: suporteMenu(); break;
-            case 8:
-                console.log("\n==== Você saiu. Tchau! ====");
-                rl.close();
-                break;
-        }
-    });
-}
-
-//======== FUNÇÕES DO MENU ========
-
-// -- CADASTRAR --
-
-function cadastrarTime(controle = 1) {
-    if (controle === 1){console.log("\n==== Cadastrar TIME ====\n");}
-
-    const validarLetras = [
-        'a','b','c','d','e','f','g','h','i','j','k','l','m',
-        'n','o','p','q','r','s','t','u','v','w','x','y','z',
-        'A','B','C','D','E','F','G','H','I','J','K','L','M',
-        'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
-      ]; 
-
-    rl.question("Nome do TIME: ", (inputNomeTime) => {
-        
-        if (inputNomeTime.length === 0){
-            console.log(`você deixou o campo em branco!`); return cadastrarTime(2);
-            }
-        if (!inputNomeTime.split("").every(a => validarLetras.includes(a))){
-            console.log(`Nome de time invalido!(use: a-z / A-Z)`)
-            return cadastrarTime(2);
-        }
-        solicitarTag(inputNomeTime);
-    });
-
-    function solicitarTag(nomeDoTime) {
-        const letrasValidas = nomeDoTime.toUpperCase().replace(/[^A-Z]/g, "").split("");
-        // nome do time: ma_ngo1988 // MA_NGO1988 // MANGO // [M, A, N, G, O]
-
-        rl.question("TAG do TIME: ", (inputTagTime) => {
-            const Tag = inputTagTime.toUpperCase(); 
-            const validaTag = Tag.split('').every(letra => letrasValidas.includes(letra));
-            // MAG // [M, A, G] // tem M, A e G no [M, A, N, G, O]? SIM // True
-
-            if (!validaTag) { //True vira False //
-                console.log("❌ A TAG contém letras que não estão no nome do time.");
-                return solicitarTag(nomeDoTime);
-            }
-
-            console.log(`✅ TAG aceita: ${Tag}`);
-            cadastrarCapitao(nomeDoTime, Tag);
-        });
+    if (isNaN(opcao) || opcao < 1 || opcao > 8) {
+      console.log(`❌ Opção inválida: ${input}`);
+      return menuPrincipal();
     }
 
-    function cadastrarCapitao(nomeTime, tagTime) {
-        console.log("\n--> Cadastrar CAPITÃO:\n");
-
-        rl.question("Nome do capitão: ", (nomeCapitao) => {
-            if (!isNaN(nomeCapitao)){
-                console.log(`digte um nome valido!`)
-            }
-
-            rl.question("Nick do LoL + Tag (ex: Beifonger#1234): ", (inputNickETag) => {
-                let [nick, riotTag] = inputNickETag.split('#').map(p => p.trim());
-
-                if (!riotTag){
-                    console.log(`TAG considearada como "BR1"  ||  ${nick}#BR1`);
-                    riotTag = "BR1";
-                }
-                numeroWhats();
-                function numeroWhats(){
-                    rl.question("Número de WhatsApp: ", (whatsapp) => {
-                    let numeroZap = parseInt(whatsapp)
-                    
-                        if (isNaN(numeroZap) || numeroZap.length < 11 || numeroZap.length > 12){
-                            console.log(`O Número: ${whatsapp}, não é valido!`)
-                            return numeroWhats();                      
-                        }   
-
-                    const time = {
-                        nome: nomeTime,
-                        tag: tagTime,
-                        capitao: {
-                            nome: nomeCapitao,
-                            nickLoL: nick,
-                            tagLoL: riotTag,
-                            whatsapp: whatsapp
-                        },
-                        players: []
-                    };
-
-                    Times.push(time);
-                    console.log(`\n✅ Capitão cadastrado com sucesso!`);
-                    registroPlayers(time);
-                });
-                }
-            });
-        });
+    switch (opcao) {
+      case 1:
+        cadastrarTime();
+        break;
+      case 2:
+        editarTime();
+        break;
+      case 3:
+        menuBID();
+        break;
+      case 4:
+        menuChaveamento();
+        break;
+      case 5:
+        registrarResultados();
+        break;
+      case 6:
+        mostrarRegras();
+        break;
+      case 7:
+        menuSuporte();
+        break;
+      case 8:
+        console.log("\n==== Você saiu. Tchau! ====");
+        rl.close();
+        break;
     }
+  });
 }
 
-function registroPlayers(time) {
-    rl.question(`\nQuantidade de Players (5 a 10): `, (inputQuantidadePlayers) => {
-        const quantidadePlayers = parseInt(inputQuantidadePlayers);
-
-        if (isNaN(quantidadePlayers)){
-            console.log(`❌ a resposta: ${quantidadePlayers} não é valida como opção!`)
-            return registroPlayers(time)
-        }
-        if (quantidadePlayers < 5) {
-            console.log(`❌ Seu time deve ter no mínimo 5 Players!`);
-            return registroPlayers(time);
-        }
-        if (quantidadePlayers > 10) {
-            console.log(`❌ Seu time não pode ter mais de 10 Players!`);
-            return registroPlayers(time);
-        }
-
-        perguntasPlayer(time, quantidadePlayers, 1);
-    });
-}
-
-function perguntasPlayer(time, quantidade, i) {
-    if (i > quantidade) {
-        console.log(`\n✅ Todos os jogadores foram cadastrados com sucesso!`);
-        console.log("Time completo:\n", JSON.stringify(time, null, 2));
-        return menuSaida();
+function cadastrarTime() {
+  console.log("\n==== Cadastrar time ====");
+  rl.question("Nome do time: ", (nome) => {
+    if (!nome || !nome.split("").every((c) => alfabeto.includes(c))) {
+      console.log("❌ Nome inválido. Use apenas letras a-z/A-Z.");
+      return cadastrarTime();
     }
+    solicitarTag(nome);
+  });
 
-    console.log(`\n==== Cadastrando Player ${i} de ${quantidade} ====`);
-
-    rl.question("Nome Completo: ", (nome) => {
-    const respostaNome = parseInt(nome)
-        if (!isNaN(nome) || respostaNome.length === 0){
-            console.log(`digte um nome valido!`)
-            return perguntasPlayer (time, quantidade, i)
-        }
-        rl.question("Nick do LoL + Tag (ex: Beifonger#1234): ", (inputNickETag) => {
-            let [nick, riotTag] = inputNickETag.split('#').map(p => p.trim());
-            if (!riotTag){
-                console.log(`TAG considearada como "BR1"  ||  ${nick}#BR1`);
-                riotTag = "BR1";
-            }
-kjbh
-            rl.question("Discord: ", (discord) => {
-                perguntarElo((elosAtual, divisaoElo) => {
-                    time.players.push({
-                        nome,
-                        nickLoL: nick,
-                        tagLoL: riotTag,
-                        discord,
-                        elo: `${elosAtual} ${divisaoElo}`
-                    });
-                    perguntasPlayer(time, quantidade, i + 1);
-                });
-            });
-        });
+  function solicitarTag(nomeTime) {
+    rl.question("TAG do time: ", (tagInput) => {
+      const tag = tagInput.toUpperCase();
+      if (tag.length < 2 || tag.length > 3) {
+        console.log("❌ A TAG deve ter entre 2 e 3 caracteres.");
+        return solicitarTag(nomeTime);
+      }
+      const letrasValidas = nomeTime
+        .toUpperCase()
+        .replace(/[^A-Z]/g, "")
+        .split("");
+      if (!tag.split("").every((c) => letrasValidas.includes(c))) {
+        console.log("❌ A TAG contém caracteres inválidos.");
+        return solicitarTag(nomeTime);
+      }
+      console.log(`✅ TAG aceita: ${tag}`);
+      cadastrarCapitao(nomeTime, tag);
     });
-}
+  }
 
-function perguntarElo(callback) {
-    console.log(`
-Digite o número do seu elo atual:
-1 - Ferro
-2 - Bronze
-3 - Prata
-4 - Gold
-5 - Platina
-6 - Diamante
-7 - Mestre
-8 - Grão Mestre
-9 - Challenger
-`);
+  function cadastrarCapitao(nomeTime, tagTime) {
+    console.log("\n--> Cadastrar capitão");
+    rl.question("Nome do capitão: ", (nomeCap) => {
+      if (!nomeCap) {
+        console.log("❌ Nome inválido.");
+        return cadastrarCapitao(nomeTime, tagTime);
+      }
+      rl.question("Nick do LoL + Tag (#1234): ", (nickTag) => {
+        let [nick, riotTag] = nickTag.split("#").map((s) => s.trim());
+        riotTag = riotTag || "BR1";
+        const time = {
+          nome: nomeTime,
+          tag: tagTime,
+          capitao: { nome: nomeCap, nickLoL: nick, tagLoL: riotTag },
+          players: [],
+        };
 
-    rl.question("Resposta (1 a 9): ", (inputElo) => {
-        const eloNum = parseInt(inputElo);
-        const elos = ["FERRO", "BRONZE", "PRATA", "GOLD", "PLATINA", "DIAMANTE", "MESTRE", "GRÃO MESTRE", "CHALLENGER"];
-
-        if (isNaN(eloNum) || eloNum < 1 || eloNum > 9) {
-            console.log("❌ Valor inválido. Digite um número de 1 a 9.");
-            return perguntarElo(callback);
+        function solicitarWhatsApp() {
+          rl.question("Número de WhatsApp (somente dígitos): ", (wh) => {
+            if (
+              wh.length < 11 ||
+              wh.length > 12 ||
+              ![...wh].every((d) => d >= "0" && d <= "9")
+            ) {
+              console.log(
+                "❌ Número inválido. Deve ter 11 a 12 dígitos numéricos."
+              );
+              return solicitarWhatsApp();
+            }
+            time.capitao.whatsapp = wh;
+            times.push(time);
+            console.log("✅ Capitão cadastrado com sucesso!\n");
+            registrarPlayers(time);
+          });
         }
 
-        const eloEscolhido = elos[eloNum - 1];
-
-        console.log(`
-Qual a divisão?
-1 - ${eloEscolhido} I
-2 - ${eloEscolhido} II
-3 - ${eloEscolhido} III
-4 - ${eloEscolhido} IV
-`);
-
-        rl.question("Resposta (1 a 4): ", (inputDiv) => {
-            const divNum = parseInt(inputDiv);
-            const divisoes = ["I", "II", "III", "IV"];
-
-            if (isNaN(divNum) || divNum < 1 || divNum > 4) {
-                console.log("❌ Valor inválido. Digite um número de 1 a 4.");
-                return perguntarElo(callback);
-            }
-
-            callback(eloEscolhido, divisoes[divNum - 1]);
-        });
+        solicitarWhatsApp();
+      });
     });
+  }
 }
 
-// -- EDITAR --
-
-function menuEditarTime() {
-    console.log(`\n==== Menu Editar Time ====\n(Função em construção)`);
-    menuPrincipal();
-}
-
-// -- BANCO INTERNO DE DADOS --
-
-function bancoInternoDeDados() {
-        console.log("\n==== BID ====\n")
-        console.log("1 - BID (players):\n2 - BID (ADM): \n3 - Voltar\n")
-
-        rl.question("Resposta: ", (inputBID) => {
-            const respostaBID = parseInt(inputBID)
-
-            switch(respostaBID){
-                case 1: BIDplayers(visualAdm = false); break;
-                case 2: BIDADM(); break;
-                case 3: menuPrincipal(); break;
-                default: console.log("❌ Resposta invalida!"); bancoInternoDeDados(); break;
-            }
-        });
-}
-
-function BIDplayers(visualAdm = false){
-    console.log(`==== BID ====\n`);
-
-    if (Times.length === 0) {
-        console.log("❌ Nenhum time cadastrado ainda.");
-        return menuPrincipal();
+function registrarPlayers(time) {
+  rl.question("Quantidade de players (5 a 10): ", (q) => {
+    const qtd = parseInt(q);
+    if (isNaN(qtd) || qtd < 5 || qtd > 10) {
+      console.log("❌ Quantidade inválida.");
+      return registrarPlayers(time);
     }
-    
-    Times.forEach((time, i) => {
-        console.log(`Time: ${time.nome} [${time.tag}] `);
-        
-        if(visualAdm){
-            if (time.capitao.length === 0){
-                console.log("Não há nenhum capitão cadastrado")
-            } else {
-                console.log(`Capitão: ${time.capitao.nome}`)
-                console.log(`(${time.capitao.nickLoL}#${time.capitao.tagLoL}) - ${time.capitao.whatsapp}`);
-            }
-        }
+    cadastrarPlayers(time, qtd, 1);
+  });
+}
 
-        if (time.players.length === 0) {
-            console.log("  (Sem jogadores cadastrados)");
-            return menuSaida();
-        } else {
-            time.players.forEach((player, index) => {
-            
-                console.log(
-                `${index + 1}. ${player.nome} (${player.nickLoL}#${player.tagLoL}) - ` +
-                `${player.elo} | Discord: ${player.discord}`
-                );  
-            });
-        }
-        console.log("");
+function cadastrarPlayers(time, total, index) {
+  if (index > total) {
+    console.log("\n✅ Todos os jogadores cadastrados!\n");
+    console.log(JSON.stringify(time, null, 2));
+    return menuSaida();
+  }
+  console.log(`\n==== Player ${index} de ${total} ==== `);
+  rl.question("Nome completo: ", (nomeP) => {
+    if (!nomeP || /^\d+$/.test(nomeP)) {
+      console.log("❌ Nome inválido.");
+      return cadastrarPlayers(time, total, index);
+    }
+    rl.question("Nick do LoL + Tag (#1234): ", (nt) => {
+      let [nickP, tagP] = nt.split("#").map((s) => s.trim());
+      tagP = tagP || "BR1";
+      rl.question("Discord: ", (discord) => {
+        selecionarElo((elo, div) => {
+          time.players.push({
+            nome: nomeP,
+            nickLoL: nickP,
+            tagLoL: tagP,
+            discord,
+            elo: `${elo} ${div}`,
+          });
+          cadastrarPlayers(time, total, index + 1);
         });
+      });
+    });
+  });
+}
+
+function selecionarElo(callback) {
+  console.log(`
+1-Ferro 2-Bronze 3-Prata 4-Gold 5-Platina 6-Diamante 7-Mestre 8-Grão Mestre 9-Challenger`);
+  rl.question("Elo (1-9): ", (e) => {
+    const n = parseInt(e);
+    const elos = [
+      "FERRO",
+      "BRONZE",
+      "PRATA",
+      "GOLD",
+      "PLATINA",
+      "DIAMANTE",
+      "MESTRE",
+      "GRÃO MESTRE",
+      "CHALLENGER",
+    ];
+    if (isNaN(n) || n < 1 || n > 9) return selecionarElo(callback);
+    const elo = elos[n - 1];
+    console.log(`1-${elo} I 2-${elo} II 3-${elo} III 4-${elo} IV`);
+    rl.question("Divisão (1-4): ", (d) => {
+      const m = parseInt(d);
+      const divs = ["I", "II", "III", "IV"];
+      if (isNaN(m) || m < 1 || m > 4) return selecionarElo(callback);
+      callback(elo, divs[m - 1]);
+    });
+  });
+}
+
+function editarTime() {
+  if (times.length === 0) {
+    console.log("❌ Nenhum time cadastrado.");
+    return menuSaida();
+  }
+  console.log("\n==== Editar time ====\n");
+  times.forEach((t, i) => console.log(`${i + 1} - ${t.nome} [${t.tag}]`));
+  rl.question("Selecione o time (número): ", (i) => {
+    const idx = parseInt(i) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= times.length) return editarTime();
+    const time = times[idx];
+    rl.question(`Novo nome (${time.nome}): `, (nn) => {
+      if (nn) time.nome = nn;
+      rl.question(`Nova TAG (${time.tag}): `, (nt) => {
+        if (nt) time.tag = nt.toUpperCase();
+        console.log("✅ Time atualizado!\n", time);
+        menuSaida();
+      });
+    });
+  });
+}
+
+function menuBID() {
+  console.log("\n==== Banco Interno de Dados ====\n1-Players 2-ADM 3-Voltar");
+  rl.question("Opção: ", (o) => {
+    const opt = parseInt(o);
+    if (opt === 1) exibirBID(false);
+    else if (opt === 2) loginADM(true, () => exibirBID(true));
+    else if (opt === 3) menuPrincipal();
+    else {
+      console.log("❌ Opção inválida.");
+      menuBID();
+    }
+  });
+}
+
+function exibirBID(mostrarAdm) {
+  console.log("\n==== BID Players ====");
+  if (times.length === 0) {
+    console.log("❌ Nenhum time.");
+    return menuSaida();
+  }
+  times.forEach((t) => {
+    console.log(`\nTime: ${t.nome} [${t.tag}]`);
+    if (mostrarAdm)
+      console.log(
+        `Capitão: ${t.capitao.nome} (${t.capitao.nickLoL}#${t.capitao.tagLoL}) - ${t.capitao.whatsapp}`
+      );
+    if (t.players.length === 0) console.log(" (Sem jogadores)");
+    t.players.forEach((p, i) =>
+      console.log(
+        `${i + 1}. ${p.nome} (${p.nickLoL}#${p.tagLoL}) - ${p.elo} | Discord: ${
+          p.discord
+        }`
+      )
+    );
+  });
+  menuSaida();
+}
+
+function menuChaveamento() {
+  console.log("\n==== Chaveamento ====\n1-Criar 2-Ver 3-Voltar");
+  rl.question("Opção: ", (o) => {
+    const opt = parseInt(o);
+    if (opt === 1) criarChaveamento();
+    else if (opt === 2) verChaveamento();
+    else if (opt === 3) menuPrincipal();
+    else {
+      console.log("❌ Opção inválida.");
+      menuChaveamento();
+    }
+  });
+}
+
+function criarChaveamento() {
+  if (times.length < 2) {
+    console.log("❌ Precisam haver ao menos 2 times.");
+    return menuChaveamento();
+  }
+  const embaralhado = [...times].sort(() => Math.random() - 0.5);
+  chaveamentos = [];
+  for (let i = 0; i < embaralhado.length; i += 2) {
+    const a = embaralhado[i];
+    const b = embaralhado[i + 1] || null;
+    chaveamentos.push({ timeA: a, timeB: b, vencedor: null });
+  }
+  console.log("✅ Chaveamento criado!\n");
+  verChaveamento();
+}
+
+function verChaveamento() {
+  if (chaveamentos.length === 0) {
+    console.log("❌ Nenhum chaveamento definido.");
+    return menuChaveamento();
+  }
+  console.log("\n==== Chaveamento Atual ====");
+  chaveamentos.forEach((m, i) => {
+    const a = m.timeA.tag;
+    const b = m.timeB ? m.timeB.tag : "--";
+    const win = m.vencedor ? ` (Vencedor: ${m.vencedor.tag})` : "";
+    console.log(`${i + 1}: ${a} vs ${b}${win}`);
+  });
+  menuSaida();
+}
+
+function registrarResultados() {
+  if (chaveamentos.length === 0) {
+    console.log("❌ Primeiro crie um chaveamento.");
+    return menuSaida();
+  }
+  let idx = 0;
+  function proximo() {
+    if (idx >= chaveamentos.length) {
+      console.log("\n✅ Resultados registrados!\n");
+      return verChaveamento();
+    }
+    const jogo = chaveamentos[idx];
+    console.log(
+      `\nJogo ${idx + 1}: ${jogo.timeA.tag} vs ${
+        jogo.timeB ? jogo.timeB.tag : "---"
+      }`
+    );
+    rl.question(
+      `Vencedor (1=${jogo.timeA.tag} 2=${
+        jogo.timeB ? jogo.timeB.tag : "---"
+      }): `,
+      (r) => {
+        const opc = parseInt(r);
+        if (opc === 1) jogo.vencedor = jogo.timeA;
+        else if (opc === 2 && jogo.timeB) jogo.vencedor = jogo.timeB;
+        else {
+          console.log("❌ Opção inválida.");
+          return;
+        }
+        idx++;
+        proximo();
+      }
+    );
+  }
+  proximo();
+}
+
+function mostrarRegras() {
+  console.log(
+    "\n==== Regras e Regulamento ====\n1- Cada time deve ter 5 a 10 jogadores.\n2- Formato de chaveamento simples eliminação.\n3- Partidas melhor de 3.\n4- Sem conduta tóxica.\n"
+  );
+  menuSaida();
+}
+
+function menuSuporte() {
+  console.log(
+    "\n==== Suporte ====\n1-Enviar ticket 2-Ver tickets 3-Responder ticket 4-Excluir ticket 5-Voltar"
+  );
+  rl.question("Opção: ", (o) => {
+    const opt = parseInt(o);
+    if (opt === 1) enviarTicket();
+    else if (opt === 2) verRespostas();
+    else if (opt === 3) responderTicket();
+    else if (opt === 4) excluirTicket();
+    else if (opt === 5) menuPrincipal();
+    else {
+      console.log("❌ Opção inválida.");
+      menuSuporte();
+    }
+  });
+}
+
+function enviarTicket() {
+  rl.question("Descreva o problema (máx 500 chars): ", (msg) => {
+    const texto = msg.slice(0, 500);
+    tickets.push({ mensagem: texto, resposta: null });
+    console.log("✅ Ticket enviado!\n", texto);
     menuSaida();
+  });
 }
 
-function BIDADM() {
-    loginAdm(false, function(success) {
-        if (success) {
-            BIDplayers(true);
-        }
+function verRespostas() {
+  console.log("\n==== Tickets ====\n");
+  if (tickets.length === 0) {
+    console.log("Nenhum ticket.");
+    return menuSaida();
+  }
+  tickets.forEach((t, i) =>
+    console.log(`${i + 1}: ${t.mensagem}\n  Resposta: ${t.resposta || "---"}\n`)
+  );
+  menuSaida();
+}
+
+function responderTicket() {
+  const pendentes = tickets.filter((t) => !t.resposta);
+  if (pendentes.length === 0) {
+    console.log("Nenhum ticket pendente.");
+    return menuSaida();
+  }
+  pendentes.forEach((t, i) => console.log(`${i + 1}: ${t.mensagem}`));
+  rl.question("Selecione ticket (número): ", (i) => {
+    const idx = parseInt(i) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= pendentes.length)
+      return responderTicket();
+    rl.question("Resposta: ", (resp) => {
+      pendentes[idx].resposta = resp;
+      console.log("✅ Resposta registrada.");
+      menuSaida();
     });
+  });
 }
 
-// -- CHAVEAMENTO --
-
-function chaveamento() {
-    console.log(`==== Menu chaveamento ====`)
-    console.log(`\n 1 - Criar Chaveamento(ADM):\n 2 - Ver Chaveamento:\n`)
-    rl.question("Resposta: ", (inputMenuChaveamento)=>{
-    const inputMenuChaveamentoEmNumero = parseInt(inputMenuChaveamento)
-
-    switch(inputMenuChaveamentoEmNumero){
-        case 1: criarChaveamento(); break;
-        case 2: verChaveamento(); break;
-        default: console.log(`❌ ${inputMenuChaveamentoEmNumero} Não é uma Resposta Valida!`); break;
-    }
-    });
-    chaveamento();
+function excluirTicket() {
+  if (tickets.length === 0) {
+    console.log("Nenhum ticket.");
+    return menuSaida();
+  }
+  tickets.forEach((t, i) => console.log(`${i + 1}: ${t.mensagem}`));
+  rl.question("Excluir ticket (número): ", (i) => {
+    const idx = parseInt(i) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= tickets.length) return excluirTicket();
+    tickets.splice(idx, 1);
+    console.log("✅ Ticket excluído.");
+    menuSaida();
+  });
 }
-
-function criarChaveamento(){
-    console.log(`==== Menu criar chaveamento ====
-
-    1 - Criar
-    2 - Editar
-    3 - Excluir
-    
-    
-    `)
-}
-
-// -- RESULTADOS --
-
-function resultados() {
-    console.log("Função em construção...");
-    menuPrincipal();
-}
-
-// -- REGRAS E REGULAMENTO --
-
-function regrasRegulamentos() {
-    console.log("Função em construção...");
-    menuPrincipal();
-}
-
-// -- SUPORTE --
-
-tickets = [];
-
-function suporteMenu() {
-console.log(`==== SUPORTE ====
-
-1 - MANDAR TICKET
-2 - SUPORTE WHATSAPP
-3 - VER RESPOSTAS
-
--- ADM --
-4 - RESPONDER TICKET
-5 - DELETAR`);
-
-rl.question("Resposta: ", (inputSuporte) =>{
-    const RS = parseInt(inputSuporte)
-
-    if (isNaN(RS) || RS > 5 || RS < 1){
-        console.log(`A resposta ${RS}, não é valida!`)
-        return suporteMenu();
-    }
-
-    switch(RS){
-        case 1: mandarTicket(); break;
-        case 2: suporteTicket(); break;
-        case 3: verRespostas(); break;
-        case 4: responderTicket(); break;
-        case 5: deletarTicket(); break;
-        
-    }
-});
-}
-
-function mandarTicket(){
-
-    console.log(`ticket:\n`)
-
-
-    
-}
-
-// ========== FUNÇÕES UTILITARIAS ==========
 
 function menuSaida() {
-    console.log(`\n==== Menu Saída ====
-1 - Voltar para o Menu Principal;
-2 - Sair;
-`);
-
-    rl.question("RESPOSTA: ", (input) => {
-        const opcao = parseInt(input);
-        if (opcao === 1) return menuPrincipal();
-        if (opcao === 2) return rl.close();
-
-        console.log("Opção inválida.");
-        return menuSaida();
-    });
+  console.log("\n1-Voltar menu principal 2-Sair");
+  rl.question("Opção: ", (o) => {
+    if (o === "1") return menuPrincipal();
+    if (o === "2") return rl.close();
+    console.log("❌ Opção inválida.");
+    menuSaida();
+  });
 }
 
-function loginAdm(voltarMenu = false,  callback){
-
-    let logins = [    
-        { login:"teste@gmail", senha:"testesenha1"},
-        { login:"teste2@gmail", senha:"testesenha2"}
-    ];
-
-    if (voltarMenu){rl.question("Voltar Menu (s/n)? ",(inputVoltarMenu) => {
-        const respostaVoltarMenu = inputVoltarMenu.toUpperCase().split("").map(a=>a.trim()).filter(a=>a === "N" || a ==="S")[0];
-
-        if (!respostaVoltarMenu){
-            console.log("Digte uma resposta valida!")
-            return(voltarMenu = true, callback)
-        }
-        if (respostaVoltarMenu === "S"){
-            return menuPrincipal();
-        }
-        if(respostaVoltarMenu === "N"){
-            console.log("voltando ao LOGIN!")
-            return (loginAdm(voltarMenu = false, callback))
-        }
-
-    })}
-
-    rl.question("Login: ", (inputLongin) =>{
-        rl.question("Senha: ", (inputSenha) =>{
-
-            let acessoLiberado = false
-            for (let i = 0; i < logins.length; i ++){
-
-                let VerificarLogin = (inputLongin === logins[i].login)
-                let VerificarSenha = (inputSenha === logins[i].senha)
-
-                if (VerificarLogin && VerificarSenha){
-                    acessoLiberado = true
-                    break;
-                }
-            }
-            if (acessoLiberado){
-                console.log("✅ Acesso liberado!")
-                callback(true);
-            }
-            else {console.log("❌ Acesso negado!");
-                return loginAdm(voltarMenu = true, callback)
-            }
-        });
+function loginADM(retornarMenu, callback) {
+  const credenciais = [
+    { login: "teste@gmail", senha: "testesenha1" },
+    { login: "teste2@gmail", senha: "testesenha2" },
+  ];
+  rl.question("Login: ", (u) => {
+    rl.question("Senha: ", (s) => {
+      const ok = credenciais.some((c) => c.login === u && c.senha === s);
+      if (ok) {
+        console.log("✅ Acesso liberado!");
+        return callback();
+      }
+      console.log("❌ Acesso negado!");
+      if (retornarMenu) return menuPrincipal();
+      loginADM(true, callback);
     });
+  });
+}
+
+function gerarAlfabeto() {
+  const arr = [];
+  for (let i = 65; i <= 90; i++)
+    arr.push(String.fromCharCode(i), String.fromCharCode(i).toLowerCase());
+  return arr;
+}
+
+function carregarTimesTeste(load = true) {
+  if (!load) return [];
+
+  return [
+    {
+      nome: "Furia E-Sports",
+      tag: "FUR",
+      capitao: {
+        nome: "Carlos Alberto",
+        nickLoL: "FURCarlin",
+        tagLoL: "1111",
+        whatsapp: "11999999999",
+      },
+      players: [
+        {
+          nome: "Lucas Oliveira",
+          nickLoL: "Luquinhas",
+          tagLoL: "1234",
+          discord: "Luquinhas#0001",
+          elo: "DIAMANTE I",
+        },
+        {
+          nome: "Marcos Silva",
+          nickLoL: "Marcão",
+          tagLoL: "2222",
+          discord: "Marcao#1234",
+          elo: "PLATINA II",
+        },
+        {
+          nome: "João Pedro",
+          nickLoL: "JpGod",
+          tagLoL: "3333",
+          discord: "JpGod#3333",
+          elo: "OURO I",
+        },
+        {
+          nome: "Thiago Santos",
+          nickLoL: "ThiZada",
+          tagLoL: "4444",
+          discord: "ThiZada#4444",
+          elo: "DIAMANTE IV",
+        },
+        {
+          nome: "Ricardo Mendes",
+          nickLoL: "RicMaster",
+          tagLoL: "5555",
+          discord: "RicMaster#5555",
+          elo: "PLATINA III",
+        },
+      ],
+    },
+    {
+      nome: "Pain Gaming",
+      tag: "PNG",
+      capitao: {
+        nome: "Felipe Araújo",
+        nickLoL: "PainFelps",
+        tagLoL: "9999",
+        whatsapp: "11988888888",
+      },
+      players: [
+        {
+          nome: "André Costa",
+          nickLoL: "Andrezin",
+          tagLoL: "6666",
+          discord: "Andrezin#6666",
+          elo: "CHALLENGER I",
+        },
+        {
+          nome: "Gustavo Rocha",
+          nickLoL: "GugaTop",
+          tagLoL: "7777",
+          discord: "GugaTop#7777",
+          elo: "GRÃO MESTRE II",
+        },
+        {
+          nome: "Pedro Martins",
+          nickLoL: "MartinsBR",
+          tagLoL: "8888",
+          discord: "Martins#8888",
+          elo: "MESTRE IV",
+        },
+        {
+          nome: "Lucas Ferreira",
+          nickLoL: "LFer",
+          tagLoL: "1212",
+          discord: "LFer#1212",
+          elo: "DIAMANTE II",
+        },
+        {
+          nome: "Rafael Lima",
+          nickLoL: "RafaMid",
+          tagLoL: "3434",
+          discord: "RafaMid#3434",
+          elo: "OURO III",
+        },
+      ],
+    },
+  ];
 }
