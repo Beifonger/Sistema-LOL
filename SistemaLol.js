@@ -316,6 +316,7 @@ function verChaveamento() {
   menuSaida();
 }
 
+//-- Resultados
 function registrarResultados() {
   if (chaveamentos.length === 0) {
     console.log("❌ Primeiro crie um chaveamento.");
@@ -353,6 +354,7 @@ function registrarResultados() {
   proximo();
 }
 
+//-- Regras
 function mostrarRegras() {
   console.log(
     "\n==== Regras e Regulamento ====\n1- Cada time deve ter 5 a 10 jogadores.\n2- Formato de chaveamento simples eliminação.\n3- Partidas melhor de 3.\n4- Sem conduta tóxica.\n"
